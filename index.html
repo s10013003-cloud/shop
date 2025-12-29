@@ -1,0 +1,257 @@
+!DOCTYPE html
+html lang=zh-TW
+head
+    meta charset=UTF-8
+    meta name=viewport content=width=device-width, initial-scale=1.0
+    title嘉咊百貨生活館 - 線上點單系統title
+    style
+        body { font-family -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif; margin 0; padding 0; background-color #f4f4f4; }
+        header { background-color #00C300; color white; padding 15px; text-align center; position sticky; top 0; z-index 100; }
+        h1 { margin 0; font-size 1.2rem; }
+        .container { padding 15px; max-width 600px; margin 0 auto; }
+        
+         商品卡片樣式 
+        .product-grid { display grid; grid-template-columns repeat(2, 1fr); gap 10px; }
+        .product-card { background white; border-radius 8px; overflow hidden; box-shadow 0 2px 5px rgba(0,0,0,0.1); padding-bottom 10px; }
+        .product-img { width 100%; height 150px; object-fit cover; background-color #ddd; }
+        .product-info { padding 10px; }
+        .product-name { font-weight bold; margin-bottom 5px; }
+        .product-price { color #e44d26; font-weight bold; }
+        .add-btn { width 90%; margin 0 auto; display block; background-color #00C300; color white; border none; padding 8px; border-radius 4px; cursor pointer; }
+        
+         購物車與管理區塊 
+        .section-title { margin-top 20px; border-bottom 2px solid #ddd; padding-bottom 5px; }
+        .cart-item { display flex; justify-content space-between; align-items center; background white; padding 10px; margin-bottom 5px; border-radius 4px; }
+        .form-group { margin-bottom 10px; }
+        .form-group label { display block; margin-bottom 5px; }
+        .form-group input { width 100%; padding 8px; box-sizing border-box; }
+        
+         按鈕樣式 
+        .btn { width 100%; padding 12px; border none; border-radius 5px; cursor pointer; font-size 1rem; margin-top 10px; }
+        .btn-primary { background-color #00C300; color white; }
+        .btn-danger { background-color #d9534f; color white; }
+        .btn-admin { background-color #333; color white; margin-top 30px; }
+
+         管理員介面 
+        #admin-panel { display none; background #fff; padding 15px; border 2px solid #333; margin-top 20px; }
+        .delete-btn { color red; cursor pointer; margin-left 10px; font-size 0.8rem; }
+    style
+head
+body
+
+header
+    h1 id=page-title嘉咊百貨生活館h1
+header
+
+div class=container
+    div id=shop-view
+        div class=product-grid id=product-list
+            div
+    div
+
+    h3 class=section-title🛒 購物車h3
+    div id=cart-list
+        div style=text-aligncenter; color#888; padding10px;購物車是空的div
+    div
+    div style=text-align right; font-weight bold; margin-top 10px;總金額 $span id=total-price0spandiv
+
+    h3 class=section-title📝 結帳資訊h3
+    div class=form-group
+        label您的姓名label
+        input type=text id=cust-name placeholder=請輸入姓名
+    div
+    div class=form-group
+        labelLINE ID (方便聯繫)label
+        input type=text id=cust-line placeholder=請輸入 LINE ID
+    div
+    button class=btn btn-primary onclick=checkout()送出訂單 (傳送至 LINE)button
+
+    button class=btn btn-admin onclick=toggleAdmin()⚙️ 管理員模式button
+    
+    div id=admin-panel
+        h3新增商品h3
+        div class=form-group
+            label商品名稱label
+            input type=text id=new-name
+        div
+        div class=form-group
+            label價格label
+            input type=number id=new-price
+        div
+        div class=form-group
+            label圖片網址 (可留空)label
+            input type=text id=new-img placeholder=請輸入圖片連結 URL
+        div
+        button class=btn btn-primary onclick=addProduct()新增上架button
+        button class=btn btn-danger onclick=clearData()⚠️ 清除所有資料 (重置)button
+    div
+div
+
+script
+     初始化資料
+    let products = JSON.parse(localStorage.getItem('products'))  [
+        { id 1, name '抽取式衛生紙(串)', price 120, img 'httpsvia.placeholder.com150text=Tissue' },
+        { id 2, name '統一肉燥麵(袋)', price 85, img 'httpsvia.placeholder.com150text=Noodle' },
+        { id 3, name '浴室清潔劑', price 69, img 'httpsvia.placeholder.com150text=Cleaner' },
+        { id 4, name '印尼乾麵', price 15, img 'httpsvia.placeholder.com150text=Indomie' }
+    ];
+    let cart = [];
+
+     渲染商品列表
+    function renderProducts() {
+        const list = document.getElementById('product-list');
+        list.innerHTML = '';
+        products.forEach(p = {
+            list.innerHTML += `
+                div class=product-card
+                    img src=${p.img  'httpsvia.placeholder.com150'} class=product-img
+                    div class=product-info
+                        div class=product-name${p.name} span class=delete-btn onclick=removeProduct(${p.id}) style=display${adminMode  'inline'  'none'}[刪除]spandiv
+                        div class=product-price$${p.price}div
+                    div
+                    button class=add-btn onclick=addToCart(${p.id})加入購物車button
+                div
+            `;
+        });
+    }
+
+     加入購物車
+    function addToCart(id) {
+        const product = products.find(p = p.id === id);
+        const existing = cart.find(item = item.id === id);
+        if (existing) {
+            existing.qty++;
+        } else {
+            cart.push({ ...product, qty 1 });
+        }
+        renderCart();
+    }
+
+     渲染購物車
+    function renderCart() {
+        const list = document.getElementById('cart-list');
+        const totalEl = document.getElementById('total-price');
+        let total = 0;
+        
+        if (cart.length === 0) {
+            list.innerHTML = 'div style=text-aligncenter; color#888; padding10px;購物車是空的div';
+            totalEl.innerText = '0';
+            return;
+        }
+
+        list.innerHTML = '';
+        cart.forEach((item, index) = {
+            total += item.price  item.qty;
+            list.innerHTML += `
+                div class=cart-item
+                    div${item.name} ($${item.price})div
+                    div
+                        button onclick=changeQty(${index}, -1)-button
+                        span style=margin0 5px${item.qty}span
+                        button onclick=changeQty(${index}, 1)+button
+                    div
+                div
+            `;
+        });
+        totalEl.innerText = total;
+    }
+
+    function changeQty(index, change) {
+        cart[index].qty += change;
+        if (cart[index].qty = 0) cart.splice(index, 1);
+        renderCart();
+    }
+
+     結帳功能 (轉 LINE)
+    function checkout() {
+        if (cart.length === 0) return alert('購物車是空的！');
+        
+        const name = document.getElementById('cust-name').value;
+        const lineId = document.getElementById('cust-line').value;
+        
+        if (!name  !lineId) return alert('請輸入姓名和 LINE ID 以便聯絡');
+
+        let msg = `【嘉咊百貨生活館 - 新訂單】n`;
+        msg += `姓名 ${name}n`;
+        msg += `LINE ID ${lineId}n`;
+        msg += `------------------n`;
+        
+        let total = 0;
+        cart.forEach(item = {
+            msg += `${item.name} x ${item.qty} = $${item.price  item.qty}n`;
+            total += item.price  item.qty;
+        });
+        
+        msg += `------------------n`;
+        msg += `總金額 $${total}nn`;
+        msg += `(請確認庫存後回覆)`;
+
+         編碼並開啟 LINE
+        const url = `httpsline.meRmsgtext${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+    }
+
+     管理員功能
+    let adminMode = false;
+    function toggleAdmin() {
+        if (adminMode) {
+            adminMode = false;
+            document.getElementById('admin-panel').style.display = 'none';
+            renderProducts();
+            return;
+        }
+        
+        const pwd = prompt(請輸入管理員密碼 (預設 1234));
+        if (pwd === '1234') {
+            adminMode = true;
+            document.getElementById('admin-panel').style.display = 'block';
+            renderProducts();  重新渲染以顯示刪除按鈕
+        } else {
+            alert(密碼錯誤);
+        }
+    }
+
+    function addProduct() {
+        const name = document.getElementById('new-name').value;
+        const price = Number(document.getElementById('new-price').value);
+        const img = document.getElementById('new-img').value;
+
+        if (!name  !price) return alert(請輸入名稱與價格);
+
+        products.push({
+            id Date.now(),
+            name name,
+            price price,
+            img img
+        });
+        
+        localStorage.setItem('products', JSON.stringify(products));
+        renderProducts();
+        
+         清空輸入框
+        document.getElementById('new-name').value = '';
+        document.getElementById('new-price').value = '';
+        document.getElementById('new-img').value = '';
+        alert('商品已上架');
+    }
+
+    function removeProduct(id) {
+        if (!confirm(確定刪除此商品？)) return;
+        products = products.filter(p = p.id !== id);
+        localStorage.setItem('products', JSON.stringify(products));
+        renderProducts();
+    }
+
+    function clearData() {
+        if (confirm(這將清除所有商品資料，確定嗎？)) {
+            localStorage.removeItem('products');
+            location.reload();
+        }
+    }
+
+     初始執行
+    renderProducts();
+script
+
+body
+html
