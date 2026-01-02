@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>嘉咊百貨生活館 - Join Home Supermarket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -11,77 +11,94 @@
             --brand-green: #1e7847;
             --brand-bg: #fdfdf5;
             --brand-text: #333;
+            --brand-orange: #e47f3f;
         }
-        body { background-color: var(--brand-bg); padding-bottom: 120px; font-family: Arial, sans-serif; color: var(--brand-text); }
+        body { background-color: var(--brand-bg); padding-bottom: 120px; font-family: "Helvetica Neue", Arial, sans-serif; color: var(--brand-text); }
         
-        .header { background-color: var(--brand-bg); border-bottom: 4px solid var(--brand-green); padding: 15px 10px; text-align: center; }
-        .logo-img { max-height: 80px; width: auto; display: block; margin: 0 auto 10px auto; } 
+        /* 頁首 Header */
+        .header { background-color: white; padding: 10px 15px; position: sticky; top: 0; z-index: 1020; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .logo-img { height: 40px; width: auto; } 
         
-        .lang-select { max-width: 200px; margin: 0 auto; border: 2px solid var(--brand-green); color: var(--brand-green); font-weight: bold; border-radius: 20px; text-align: center; cursor: pointer; }
+        .lang-select { border: 1px solid var(--brand-green); color: var(--brand-green); font-weight: bold; border-radius: 20px; font-size: 0.85rem; padding: 2px 10px; cursor: pointer; background: white; }
 
-        .product-card { border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 15px; background: white; border-radius: 15px; overflow: hidden; display: flex; flex-direction: row; align-items: center; min-height: 120px; }
+        /* --- 分類導覽列 (類似外送平台) --- */
+        .category-nav { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 5px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .category-nav::-webkit-scrollbar { display: none; }
+        .cat-btn { white-space: nowrap; padding: 6px 15px; border-radius: 20px; background: #f1f1f1; color: #666; font-size: 0.9rem; border: none; transition: 0.3s; }
+        .cat-btn.active { background: var(--brand-green); color: white; font-weight: bold; }
+
+        /* 分類標題 */
+        .category-title { font-weight: bold; font-size: 1.1rem; margin: 20px 0 10px 0; color: var(--brand-green); border-left: 4px solid var(--brand-orange); padding-left: 10px; scroll-margin-top: 140px; }
+
+        /* 商品卡片 */
+        .product-card { background: white; border-radius: 12px; padding: 10px; margin-bottom: 15px; display: flex; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
         
-        /* 圖片區域 - 強制設定大小與背景，避免破圖時太難看 */
-        .product-img-box { width: 130px; height: 130px; flex-shrink: 0; background: #e9ecef; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        /* 圖片區域 */
+        .product-img-box { width: 100px; height: 100px; flex-shrink: 0; border-radius: 8px; overflow: hidden; position: relative; background: #f8f9fa; }
         .product-img { width: 100%; height: 100%; object-fit: cover; }
-        .no-img-text { font-size: 0.7rem; color: #999; position: absolute; }
-
-        .product-info { padding: 10px 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; height: 130px; }
-        .product-name { font-weight: bold; font-size: 1.1rem; color: #222; margin-bottom: 2px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .product-subname { font-size: 0.85rem; color: #888; margin-bottom: auto; display: block; }
         
-        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-        .product-price { color: #e63946; font-weight: bold; font-size: 1.3rem; }
+        /* 資訊區域 */
+        .product-info { flex-grow: 1; padding-left: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-name { font-weight: bold; font-size: 1rem; color: #333; line-height: 1.3; margin-bottom: 2px; }
+        .product-subname { font-size: 0.8rem; color: #999; }
+        .product-price { color: #e63946; font-weight: bold; font-size: 1.1rem; }
         
-        .qty-control { display: flex; align-items: center; background: #f0f0f0; border-radius: 20px; padding: 2px 8px; }
-        .qty-btn { width: 28px; height: 28px; border: none; background: white; border-radius: 50%; color: var(--brand-green); font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
-        .qty-val { width: 30px; text-align: center; font-weight: bold; font-size: 1rem; color: #333; }
+        /* 加減按鈕 */
+        .add-btn { width: 30px; height: 30px; background: var(--brand-green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; position: absolute; right: 10px; bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        .qty-control { display: flex; align-items: center; position: absolute; right: 10px; bottom: 10px; background: white; border-radius: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .qty-btn { width: 30px; height: 30px; border: none; background: transparent; color: var(--brand-green); font-weight: bold; font-size: 1.2rem; }
+        .qty-val { width: 25px; text-align: center; font-weight: bold; font-size: 0.9rem; }
 
-        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); z-index: 1000; border-top-left-radius: 16px; border-top-right-radius: 16px; }
+        /* 底部結帳區 */
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); z-index: 1030; border-top-left-radius: 16px; border-top-right-radius: 16px; }
         .btn-checkout { background-color: var(--brand-green); border: none; padding: 12px; font-size: 1.1rem; width: 100%; border-radius: 10px; font-weight: bold; }
-
+        
         /* 燈箱 */
-        .lightbox-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); }
-        .lightbox-content-wrapper { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; }
+        .lightbox-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
         .lightbox-img { max-width: 95%; max-height: 80vh; border-radius: 8px; }
-        .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 40px; cursor: pointer; background: rgba(0,0,0,0.5); width: 50px; height: 50px; text-align: center; line-height: 45px; border-radius: 50%; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <img src="logo.jpg" alt="Logo" class="logo-img" onerror="this.style.display='none'">
-    <select id="lang-switch" class="form-select lang-select" onchange="switchLang(this.value)">
-        <option value="zh">🇹🇼 中文</option>
-        <option value="en">🇺🇸 English</option>
-        <option value="id">🇮🇩 Indonesia</option>
-        <option value="vi">🇻🇳 Tiếng Việt</option>
-    </select>
+    <div class="header-top">
+        <div class="d-flex align-items-center">
+            <img src="logo.jpg" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+            <span class="ms-2 fw-bold" style="color:var(--brand-green)">嘉咊百貨</span>
+        </div>
+        <select id="lang-switch" class="lang-select" onchange="switchLang(this.value)">
+            <option value="zh">🇹🇼 中文</option>
+            <option value="en">🇺🇸 English</option>
+            <option value="id">🇮🇩 Indonesia</option>
+            <option value="vi">🇻🇳 Tiếng Việt</option>
+        </select>
+    </div>
+    <div class="category-nav" id="cat-nav"></div>
 </div>
 
-<div class="container mt-3">
+<div class="container mt-2">
     <div id="loading" class="text-center py-5">
         <div class="spinner-border text-success" role="status"></div>
-        <div class="mt-2 text-muted">Reading data...</div>
+        <div class="mt-2 text-muted">正在整理貨架...</div>
     </div>
-    <div id="product-list"></div>
-    <div id="debug-msg" class="text-danger text-center mt-3" style="font-size:0.8rem;"></div>
+    <div id="product-container"></div>
 </div>
 
-<div id="imgLightbox" class="lightbox-modal" onclick="closeLightbox()">
-    <div class="lightbox-close">&times;</div>
-    <div class="lightbox-content-wrapper"><img class="lightbox-img" id="lightboxImg"></div>
+<div id="imgLightbox" class="lightbox-modal" onclick="this.style.display='none'">
+    <img class="lightbox-img" id="lightboxImg">
 </div>
 
 <div class="cart-bar">
-    <div id="checkout-form" style="display:none;">
+    <div id="checkout-form" style="display:none;" class="mb-2">
         <div class="row g-2">
-            <div class="col-4"><input type="text" class="form-control" id="cust-name" placeholder="Name"></div>
-            <div class="col-4"><input type="tel" class="form-control" id="cust-phone" placeholder="Phone"></div>
-            <div class="col-4"><input type="text" class="form-control" id="cust-line" placeholder="LINE ID"></div>
+            <div class="col-4"><input type="text" class="form-control form-control-sm" id="cust-name" placeholder="Name"></div>
+            <div class="col-4"><input type="tel" class="form-control form-control-sm" id="cust-phone" placeholder="Phone"></div>
+            <div class="col-4"><input type="text" class="form-control form-control-sm" id="cust-line" placeholder="LINE ID"></div>
         </div>
     </div>
-    <div class="d-flex justify-content-between align-items-center mt-2">
+    <div class="d-flex justify-content-between align-items-center">
         <div>
             <div class="text-muted small">Cart: <span class="badge bg-secondary rounded-pill" id="cart-count">0</span></div>
             <div class="fw-bold fs-4 text-success">$<span id="total-price">0</span></div>
@@ -93,8 +110,12 @@
 </div>
 
 <script>
+    // =========================================================
+    // 設定區
+    // =========================================================
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRUuy3yndWvFJqQGIZ0oXiWDLjbYzOzZGK6DN1WPz6yExBiAGLZifNvJxvrxyfvjpN7H22qmwqujOkM/pub?gid=0&single=true&output=csv'; 
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbySfQr-1oxCQPVaCRQMKoJSlPhigsUryAMWDnISiWQhC38XoDkfUZwg129FTGY1Na5LSQ/exec';
+    // =========================================================
 
     let products = [];
     let cart = {};
@@ -102,57 +123,43 @@
 
     const uiText = {
         zh: { name: "姓名", phone: "電話", line: "LINE ID", btn: "確認下單", empty: "購物車是空的" },
-        en: { name: "Your Name", phone: "Phone", line: "LINE ID", btn: "Place Order", empty: "Cart is empty" },
-        id: { name: "Nama", phone: "Nomor HP", line: "ID LINE", btn: "Pesan Sekarang", empty: "Keranjang kosong" },
-        vi: { name: "Tên", phone: "Số điện thoại", line: "ID LINE", btn: "Đặt hàng", empty: "Giỏ hàng trống" }
+        en: { name: "Name", phone: "Phone", line: "LINE ID", btn: "Order", empty: "Cart Empty" },
+        id: { name: "Nama", phone: "HP", line: "LINE ID", btn: "Pesan", empty: "Keranjang Kosong" },
+        vi: { name: "Tên", phone: "SĐT", line: "LINE ID", btn: "Đặt Hàng", empty: "Giỏ Hàng Trống" }
     };
 
     window.onload = function() {
         fetch(csvUrl)
             .then(res => res.text())
             .then(text => {
-                products = parseCSVSmart(text); // 使用新的智慧解析功能
-                renderProducts();
+                products = parseCSV(text);
+                renderApp();
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('checkout-form').style.display = 'block';
             })
-            .catch(err => {
-                document.getElementById('loading').innerHTML = '❌ 讀取失敗';
-                document.getElementById('debug-msg').innerText = '請檢查 Google 試算表連結與權限設定。\n' + err;
-            });
+            .catch(err => alert('讀取失敗，請確認網路或試算表設定'));
     };
 
-    // --- 強力圖片轉換器 (解決 Google Drive 顯示問題) ---
+    // 強力圖片修復
     function fixImgUrl(url) {
         if (!url) return '';
-        url = url.trim();
-        // 抓取 Google Drive ID
-        if (url.indexOf('drive.google.com') !== -1) {
+        if (url.includes('drive.google.com')) {
             let id = '';
-            // 嘗試匹配 /d/ID/
-            let match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-            if (match) id = match[1];
-            // 嘗試匹配 id=ID
-            if (!id) {
-                match = url.match(/id=([a-zA-Z0-9_-]+)/);
-                if (match) id = match[1];
-            }
-            // 如果找到 ID，轉成直接預覽連結
-            if (id) return `https://drive.google.com/uc?export=view&id=${id}`;
+            let match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
         }
         return url;
     }
 
-    // --- 智慧 CSV 解析 (不再依賴順序，而是依賴標題) ---
-    function parseCSVSmart(text) {
+    // 智慧 CSV 解析 (包含分類 category)
+    function parseCSV(text) {
         const lines = text.trim().split('\n');
         if (lines.length < 2) return [];
-
-        // 1. 讀取標題列，找出每一欄在哪個位置
         const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
         
-        // 建立索引地圖 (例如: name_zh 在第 0 欄, price 在第 4 欄...)
+        // 欄位對應
         const idx = {
+            cat: headers.indexOf('category'), // 新增分類欄位
             zh: headers.indexOf('name_zh'),
             en: headers.indexOf('name_en'),
             id: headers.indexOf('name_id'),
@@ -161,33 +168,23 @@
             img: headers.indexOf('img')
         };
 
-        // 如果找不到關鍵欄位，報錯
-        if (idx.zh === -1 || idx.price === -1) {
-            document.getElementById('debug-msg').innerText = '⚠️ 錯誤：試算表標題不正確。\n請確認第一列有: name_zh, name_en, name_id, name_vi, price, img';
-            return [];
-        }
-
         const result = [];
         for(let i=1; i<lines.length; i++) {
-            // 正則處理 CSV (處理逗號內容)
             const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
             if(row) {
-                const clean = (colIndex) => {
-                    if (colIndex === -1 || !row[colIndex]) return '';
-                    return row[colIndex].replace(/^"|"$/g, '').trim();
-                };
-
-                const p = {
+                const clean = (colIndex) => (colIndex > -1 && row[colIndex]) ? row[colIndex].replace(/^"|"$/g, '').trim() : '';
+                
+                let p = {
                     id: i,
+                    category: clean(idx.cat) || "其他商品 (Others)", // 預設分類
                     zh: clean(idx.zh),
                     en: clean(idx.en),
                     id_lang: clean(idx.id),
                     vi: clean(idx.vi),
                     price: parseInt(clean(idx.price)) || 0,
-                    img: fixImgUrl(clean(idx.img)) // 使用強力轉換
+                    img: fixImgUrl(clean(idx.img))
                 };
-
-                if (p.zh && p.price) result.push(p);
+                if(p.zh && p.price) result.push(p);
             }
         }
         return result;
@@ -200,61 +197,80 @@
         document.getElementById('cust-phone').placeholder = t.phone;
         document.getElementById('cust-line').placeholder = t.line;
         document.getElementById('btn-submit').innerText = t.btn;
-        renderProducts();
+        renderApp(); // 重新渲染整個介面 (含分類翻譯)
     }
 
-    function renderProducts() {
-        const list = document.getElementById('product-list');
-        let html = '';
-        products.forEach(p => {
-            // 語言邏輯：若該語言空白，則顯示中文
-            let mainName = p.zh;
-            if (currentLang === 'en' && p.en) mainName = p.en;
-            if (currentLang === 'id' && p.id_lang) mainName = p.id_lang;
-            if (currentLang === 'vi' && p.vi) mainName = p.vi;
-            
-            // 若為外文模式，副標題顯示中文
-            let subName = (currentLang !== 'zh') ? p.zh : '&nbsp;';
-            
-            // 圖片處理
-            let imgHTML = p.img ? 
-                `<img src="${p.img}" class="product-img" onerror="this.parentElement.innerHTML='<span class=\'no-img-text\'>No Image</span>'">` : 
-                `<span class="no-img-text">No Image</span>`;
+    function renderApp() {
+        const container = document.getElementById('product-container');
+        const nav = document.getElementById('cat-nav');
+        container.innerHTML = '';
+        nav.innerHTML = '';
 
-            let qty = cart[p.zh] ? cart[p.zh].qty : 0;
+        // 1. 整理分類
+        let categories = [...new Set(products.map(p => p.category))];
+        
+        // 2. 建立分類選單
+        categories.forEach((cat, index) => {
+            nav.innerHTML += `<button class="cat-btn ${index===0?'active':''}" onclick="scrollToCat('${cat}', this)">${cat}</button>`;
+            
+            // 3. 建立商品區塊
+            let catProducts = products.filter(p => p.category === cat);
+            let productHTML = '';
+            
+            catProducts.forEach(p => {
+                let mainName = p.zh;
+                if (currentLang === 'en' && p.en) mainName = p.en;
+                if (currentLang === 'id' && p.id_lang) mainName = p.id_lang;
+                if (currentLang === 'vi' && p.vi) mainName = p.vi;
+                let subName = (currentLang !== 'zh') ? p.zh : '&nbsp;';
+                
+                let imgSrc = p.img ? p.img : 'https://placehold.co/100x100/eee/ccc?text=No+Img';
+                let qty = cart[p.zh] ? cart[p.zh].qty : 0;
 
-            html += `
-            <div class="product-card">
-                <div class="product-img-box" onclick="openLightbox('${p.img}')">
-                    ${imgHTML}
-                </div>
-                <div class="product-info">
-                    <div>
-                        <div class="product-name">${mainName}</div>
-                        <span class="product-subname">${subName}</span>
+                // 數量控制按鈕邏輯
+                let btnHTML = qty === 0 
+                    ? `<div class="add-btn" onclick="updateQty('${p.zh}', ${p.price}, 1)">+</div>`
+                    : `<div class="qty-control">
+                        <button class="qty-btn" onclick="updateQty('${p.zh}', ${p.price}, -1)">-</button>
+                        <div class="qty-val">${qty}</div>
+                        <button class="qty-btn" onclick="updateQty('${p.zh}', ${p.price}, 1)">+</button>
+                       </div>`;
+
+                productHTML += `
+                <div class="product-card">
+                    <div class="product-img-box" onclick="showLightbox('${imgSrc}')">
+                        <img src="${imgSrc}" class="product-img" onerror="this.src='https://placehold.co/100x100/eee/ccc?text=No+Img'">
                     </div>
-                    <div class="price-row">
-                        <span class="product-price">$${p.price}</span>
-                        <div class="qty-control">
-                            <button onclick="updateQty('${p.zh}', ${p.price}, -1)" class="qty-btn">-</button>
-                            <div class="qty-val">${qty}</div>
-                            <button onclick="updateQty('${p.zh}', ${p.price}, 1)" class="qty-btn">+</button>
+                    <div class="product-info">
+                        <div>
+                            <div class="product-name">${mainName}</div>
+                            <div class="product-subname">${subName}</div>
                         </div>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <div class="product-price">$${p.price}</div>
+                        </div>
+                        ${btnHTML}
                     </div>
-                </div>
-            </div>`;
+                </div>`;
+            });
+
+            container.innerHTML += `<div id="cat-${cat}" class="category-title">${cat}</div><div>${productHTML}</div>`;
         });
-        list.innerHTML = html;
+    }
+
+    function scrollToCat(cat, btn) {
+        document.getElementById(`cat-${cat}`).scrollIntoView({behavior: 'smooth', block: 'start'});
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
     }
 
     function updateQty(nameZh, price, change) {
-        if (change === 1 && !cart[nameZh]) {
-            cart[nameZh] = { price: price, qty: 1 };
-        } else if (cart[nameZh]) {
+        if (change === 1 && !cart[nameZh]) cart[nameZh] = { price: price, qty: 1 };
+        else if (cart[nameZh]) {
             cart[nameZh].qty += change;
             if (cart[nameZh].qty <= 0) delete cart[nameZh];
         }
-        renderProducts();
+        renderApp();
         updateCartTotal();
     }
 
@@ -268,13 +284,10 @@
         document.getElementById('cart-count').innerText = count;
     }
 
-    function openLightbox(src) {
-        if(!src) return;
-        document.getElementById('imgLightbox').style.display = 'block';
+    function showLightbox(src) {
+        if(src.includes('placehold')) return;
         document.getElementById('lightboxImg').src = src;
-    }
-    function closeLightbox() {
-        document.getElementById('imgLightbox').style.display = 'none';
+        document.getElementById('imgLightbox').style.display = 'flex';
     }
 
     function submitOrder() {
@@ -282,19 +295,16 @@
         const phone = document.getElementById('cust-phone').value.trim();
         const line = document.getElementById('cust-line').value.trim();
         const total = document.getElementById('total-price').innerText;
-        const t = uiText[currentLang];
-
-        if(Object.keys(cart).length === 0) return alert(t.empty);
-        if(!name || !phone) return alert(currentLang==='zh' ? '請填寫姓名和電話' : 'Please fill in Name and Phone');
+        
+        if(Object.keys(cart).length === 0) return alert(uiText[currentLang].empty);
+        if(!name || !phone) return alert('請填寫 Name & Phone');
 
         const btn = document.getElementById('btn-submit');
         btn.disabled = true;
-        btn.innerText = 'Processing...';
+        btn.innerText = 'Sending...';
 
         let details = '';
-        for(let k in cart) {
-            details += `${k} x${cart[k].qty}, `;
-        }
+        for(let k in cart) details += `${k} x${cart[k].qty}, `;
 
         const formData = new FormData();
         formData.append('姓名', name);
@@ -307,20 +317,16 @@
             .then(res => res.json())
             .then(data => {
                 if(data.result === 'success') {
-                    alert('✅ Order Sent Successfully!');
+                    alert('✅ Order Sent!');
                     cart = {};
-                    document.getElementById('cust-name').value = '';
-                    document.getElementById('cust-phone').value = '';
-                    renderProducts();
+                    renderApp();
                     updateCartTotal();
-                } else {
-                    alert('Error: ' + data.error);
-                }
+                } else alert('Error: ' + data.error);
             })
             .catch(err => alert('Network Error'))
             .finally(() => {
                 btn.disabled = false;
-                btn.innerText = t.btn;
+                btn.innerText = uiText[currentLang].btn;
             });
     }
 </script>
