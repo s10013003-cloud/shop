@@ -1,257 +1,179 @@
-!DOCTYPE html
-html lang=zh-TW
-head
-    meta charset=UTF-8
-    meta name=viewport content=width=device-width, initial-scale=1.0
-    title嘉咊百貨生活館 - 線上點單系統title
-    style
-        body { font-family -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif; margin 0; padding 0; background-color #f4f4f4; }
-        header { background-color #00C300; color white; padding 15px; text-align center; position sticky; top 0; z-index 100; }
-        h1 { margin 0; font-size 1.2rem; }
-        .container { padding 15px; max-width 600px; margin 0 auto; }
-        
-         商品卡片樣式 
-        .product-grid { display grid; grid-template-columns repeat(2, 1fr); gap 10px; }
-        .product-card { background white; border-radius 8px; overflow hidden; box-shadow 0 2px 5px rgba(0,0,0,0.1); padding-bottom 10px; }
-        .product-img { width 100%; height 150px; object-fit cover; background-color #ddd; }
-        .product-info { padding 10px; }
-        .product-name { font-weight bold; margin-bottom 5px; }
-        .product-price { color #e44d26; font-weight bold; }
-        .add-btn { width 90%; margin 0 auto; display block; background-color #00C300; color white; border none; padding 8px; border-radius 4px; cursor pointer; }
-        
-         購物車與管理區塊 
-        .section-title { margin-top 20px; border-bottom 2px solid #ddd; padding-bottom 5px; }
-        .cart-item { display flex; justify-content space-between; align-items center; background white; padding 10px; margin-bottom 5px; border-radius 4px; }
-        .form-group { margin-bottom 10px; }
-        .form-group label { display block; margin-bottom 5px; }
-        .form-group input { width 100%; padding 8px; box-sizing border-box; }
-        
-         按鈕樣式 
-        .btn { width 100%; padding 12px; border none; border-radius 5px; cursor pointer; font-size 1rem; margin-top 10px; }
-        .btn-primary { background-color #00C300; color white; }
-        .btn-danger { background-color #d9534f; color white; }
-        .btn-admin { background-color #333; color white; margin-top 30px; }
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>嘉咊百貨生活館 - 線上點單</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; padding-bottom: 80px; }
+        .header { background-color: #00C300; color: white; padding: 15px; text-align: center; margin-bottom: 20px; }
+        .card { border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .card-img-top { height: 180px; object-fit: cover; background-color: #e9ecef; }
+        .price { color: #dc3545; font-weight: bold; font-size: 1.2rem; }
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
+        .loading { text-align: center; padding: 50px; font-size: 1.2rem; color: #666; }
+    </style>
+</head>
+<body>
 
-         管理員介面 
-        #admin-panel { display none; background #fff; padding 15px; border 2px solid #333; margin-top 20px; }
-        .delete-btn { color red; cursor pointer; margin-left 10px; font-size 0.8rem; }
-    style
-head
-body
+<div class="header">
+    <h3 class="m-0">嘉咊百貨生活館</h3>
+</div>
 
-header
-    h1 id=page-title嘉咊百貨生活館h1
-header
-
-div class=container
-    div id=shop-view
-        div class=product-grid id=product-list
-            div
-    div
-
-    h3 class=section-title🛒 購物車h3
-    div id=cart-list
-        div style=text-aligncenter; color#888; padding10px;購物車是空的div
-    div
-    div style=text-align right; font-weight bold; margin-top 10px;總金額 $span id=total-price0spandiv
-
-    h3 class=section-title📝 結帳資訊h3
-    div class=form-group
-        label您的姓名label
-        input type=text id=cust-name placeholder=請輸入姓名
-    div
-    div class=form-group
-        labelLINE ID (方便聯繫)label
-        input type=text id=cust-line placeholder=請輸入 LINE ID
-    div
-    button class=btn btn-primary onclick=checkout()送出訂單 (傳送至 LINE)button
-
-    button class=btn btn-admin onclick=toggleAdmin()⚙️ 管理員模式button
+<div class="container">
+    <div id="loading" class="loading">
+        正在讀取商品資料...<br>
+        <small style="font-size:0.8rem; color:#999;">若過久無反應，請檢查試算表連結</small>
+    </div>
     
-    div id=admin-panel
-        h3新增商品h3
-        div class=form-group
-            label商品名稱label
-            input type=text id=new-name
-        div
-        div class=form-group
-            label價格label
-            input type=number id=new-price
-        div
-        div class=form-group
-            label圖片網址 (可留空)label
-            input type=text id=new-img placeholder=請輸入圖片連結 URL
-        div
-        button class=btn btn-primary onclick=addProduct()新增上架button
-        button class=btn btn-danger onclick=clearData()⚠️ 清除所有資料 (重置)button
-    div
-div
+    <div id="product-list" class="row"></div>
 
-script
-     初始化資料
-    let products = JSON.parse(localStorage.getItem('products'))  [
-        { id 1, name '抽取式衛生紙(串)', price 120, img 'httpsvia.placeholder.com150text=Tissue' },
-        { id 2, name '統一肉燥麵(袋)', price 85, img 'httpsvia.placeholder.com150text=Noodle' },
-        { id 3, name '浴室清潔劑', price 69, img 'httpsvia.placeholder.com150text=Cleaner' },
-        { id 4, name '印尼乾麵', price 15, img 'httpsvia.placeholder.com150text=Indomie' }
-    ];
-    let cart = [];
+    <div class="card p-3 mt-4" id="checkout-form" style="display:none;">
+        <h5>📝 訂購資訊</h5>
+        <div class="mb-3">
+            <label class="form-label">您的姓名</label>
+            <input type="text" class="form-control" id="cust-name" placeholder="例如：王小明">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">LINE ID</label>
+            <input type="text" class="form-control" id="cust-line">
+        </div>
+    </div>
+</div>
 
-     渲染商品列表
-    function renderProducts() {
-        const list = document.getElementById('product-list');
-        list.innerHTML = '';
-        products.forEach(p = {
-            list.innerHTML += `
-                div class=product-card
-                    img src=${p.img  'httpsvia.placeholder.com150'} class=product-img
-                    div class=product-info
-                        div class=product-name${p.name} span class=delete-btn onclick=removeProduct(${p.id}) style=display${adminMode  'inline'  'none'}[刪除]spandiv
-                        div class=product-price$${p.price}div
-                    div
-                    button class=add-btn onclick=addToCart(${p.id})加入購物車button
-                div
-            `;
-        });
-    }
+<div class="cart-bar">
+    <div>
+        <span id="cart-count" class="badge bg-danger rounded-pill">0</span> 
+        總計: <span class="text-success fw-bold">$<span id="total-price">0</span></span>
+    </div>
+    <button onclick="checkout()" class="btn btn-success">用 LINE 結帳</button>
+</div>
 
-     加入購物車
-    function addToCart(id) {
-        const product = products.find(p = p.id === id);
-        const existing = cart.find(item = item.id === id);
-        if (existing) {
-            existing.qty++;
-        } else {
-            cart.push({ ...product, qty 1 });
-        }
-        renderCart();
-    }
+<script>
+    // ==========================================
+    // ▼▼▼ 請把下面這行引號內的網址，換成你的 Google CSV 網址 ▼▼▼
+    const csvUrl = '這裡貼上你的Google試算表CSV連結'; 
+    // ==========================================
 
-     渲染購物車
-    function renderCart() {
-        const list = document.getElementById('cart-list');
-        const totalEl = document.getElementById('total-price');
-        let total = 0;
-        
-        if (cart.length === 0) {
-            list.innerHTML = 'div style=text-aligncenter; color#888; padding10px;購物車是空的div';
-            totalEl.innerText = '0';
+    let cart = {};
+    let products = [];
+
+    // 初始化：載入 Google 試算表
+    window.onload = function() {
+        // 防呆檢查
+        if(csvUrl.includes('這裡貼上')) {
+            alert("提醒您：程式碼裡的 Google 試算表連結還沒換喔！");
             return;
         }
 
-        list.innerHTML = '';
-        cart.forEach((item, index) = {
-            total += item.price  item.qty;
-            list.innerHTML += `
-                div class=cart-item
-                    div${item.name} ($${item.price})div
-                    div
-                        button onclick=changeQty(${index}, -1)-button
-                        span style=margin0 5px${item.qty}span
-                        button onclick=changeQty(${index}, 1)+button
-                    div
-                div
-            `;
+        fetch(csvUrl)
+            .then(res => res.text())
+            .then(text => {
+                products = parseCSV(text);
+                renderProducts(products);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('checkout-form').style.display = 'block';
+            })
+            .catch(err => {
+                document.getElementById('loading').innerHTML = '❌ 讀取失敗，請確認網址是否正確。<br>' + err;
+            });
+    };
+
+    // 解析 CSV (把試算表文字變成商品)
+    function parseCSV(text) {
+        const lines = text.trim().split('\n');
+        const result = [];
+        // 從第2行開始讀 (第1行是標題)
+        for(let i=1; i<lines.length; i++) {
+            const row = lines[i].split(',');
+            if(row.length >= 2) {
+                const name = row[0].replace(/["\r]/g, '').trim();
+                const price = parseInt(row[1].replace(/["\r]/g, '').trim());
+                const img = row[2] ? row[2].replace(/["\r]/g, '').trim() : '';
+                
+                if(name && !isNaN(price)) {
+                    result.push({id: i, name, price, img});
+                }
+            }
+        }
+        return result;
+    }
+
+    // 顯示畫面
+    function renderProducts(list) {
+        const container = document.getElementById('product-list');
+        let html = '';
+        list.forEach(p => {
+            // 處理圖片：如果有網址就用，沒有就用預設灰底圖
+            const imgSrc = p.img.startsWith('http') ? p.img : 'https://placehold.co/400x300/eee/999?text=No+Image';
+            
+            html += `
+            <div class="col-6 col-md-4">
+                <div class="card">
+                    <img src="${imgSrc}" class="card-img-top" alt="${p.name}">
+                    <div class="card-body p-2">
+                        <h6 class="card-title text-truncate" style="font-size:0.95rem;">${p.name}</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="price">$${p.price}</span>
+                            <button onclick="addToCart('${p.name}', ${p.price})" class="btn btn-sm btn-outline-success" style="font-weight:bold;">+1</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
         });
-        totalEl.innerText = total;
+        container.innerHTML = html;
     }
 
-    function changeQty(index, change) {
-        cart[index].qty += change;
-        if (cart[index].qty = 0) cart.splice(index, 1);
-        renderCart();
+    // 加入購物車
+    function addToCart(name, price) {
+        if(cart[name]) {
+            cart[name].qty += 1;
+        } else {
+            cart[name] = { price: price, qty: 1 };
+        }
+        updateCartUI();
     }
 
-     結帳功能 (轉 LINE)
+    // 更新介面數字
+    function updateCartUI() {
+        let count = 0;
+        let total = 0;
+        for(let key in cart) {
+            count += cart[key].qty;
+            total += cart[key].price * cart[key].qty;
+        }
+        document.getElementById('cart-count').innerText = count;
+        document.getElementById('total-price').innerText = total;
+    }
+
+    // 結帳轉址到 LINE
     function checkout() {
-        if (cart.length === 0) return alert('購物車是空的！');
-        
         const name = document.getElementById('cust-name').value;
-        const lineId = document.getElementById('cust-line').value;
+        const line = document.getElementById('cust-line').value;
         
-        if (!name  !lineId) return alert('請輸入姓名和 LINE ID 以便聯絡');
+        if(Object.keys(cart).length === 0) return alert('購物車是空的喔');
+        if(!name) return alert('請輸入您的姓名');
 
-        let msg = `【嘉咊百貨生活館 - 新訂單】n`;
-        msg += `姓名 ${name}n`;
-        msg += `LINE ID ${lineId}n`;
-        msg += `------------------n`;
+        let msg = `【嘉咊百貨 - 團購訂單】\n`;
+        msg += `姓名: ${name}\n`;
+        msg += `LINE: ${line}\n`;
+        msg += `----------------\n`;
         
         let total = 0;
-        cart.forEach(item = {
-            msg += `${item.name} x ${item.qty} = $${item.price  item.qty}n`;
-            total += item.price  item.qty;
-        });
-        
-        msg += `------------------n`;
-        msg += `總金額 $${total}nn`;
-        msg += `(請確認庫存後回覆)`;
-
-         編碼並開啟 LINE
-        const url = `httpsline.meRmsgtext${encodeURIComponent(msg)}`;
-        window.open(url, '_blank');
-    }
-
-     管理員功能
-    let adminMode = false;
-    function toggleAdmin() {
-        if (adminMode) {
-            adminMode = false;
-            document.getElementById('admin-panel').style.display = 'none';
-            renderProducts();
-            return;
+        for(let key in cart) {
+            let itemTotal = cart[key].price * cart[key].qty;
+            msg += `${key} x${cart[key].qty} = $${itemTotal}\n`;
+            total += itemTotal;
         }
         
-        const pwd = prompt(請輸入管理員密碼 (預設 1234));
-        if (pwd === '1234') {
-            adminMode = true;
-            document.getElementById('admin-panel').style.display = 'block';
-            renderProducts();  重新渲染以顯示刪除按鈕
-        } else {
-            alert(密碼錯誤);
-        }
-    }
-
-    function addProduct() {
-        const name = document.getElementById('new-name').value;
-        const price = Number(document.getElementById('new-price').value);
-        const img = document.getElementById('new-img').value;
-
-        if (!name  !price) return alert(請輸入名稱與價格);
-
-        products.push({
-            id Date.now(),
-            name name,
-            price price,
-            img img
-        });
+        msg += `----------------\n`;
+        msg += `總金額: $${total}\n`;
+        msg += `(請確認後回覆貼圖，謝謝！)`;
         
-        localStorage.setItem('products', JSON.stringify(products));
-        renderProducts();
-        
-         清空輸入框
-        document.getElementById('new-name').value = '';
-        document.getElementById('new-price').value = '';
-        document.getElementById('new-img').value = '';
-        alert('商品已上架');
+        window.location.href = `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`;
     }
+</script>
 
-    function removeProduct(id) {
-        if (!confirm(確定刪除此商品？)) return;
-        products = products.filter(p = p.id !== id);
-        localStorage.setItem('products', JSON.stringify(products));
-        renderProducts();
-    }
-
-    function clearData() {
-        if (confirm(這將清除所有商品資料，確定嗎？)) {
-            localStorage.removeItem('products');
-            location.reload();
-        }
-    }
-
-     初始執行
-    renderProducts();
-script
-
-body
-html
+</body>
+</html>
