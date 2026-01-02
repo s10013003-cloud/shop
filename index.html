@@ -6,83 +6,75 @@
     <title>嘉咊百貨生活館 - Join Home Supermarket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* --- 品牌視覺設定 --- */
+        /* --- 品牌設定 --- */
         :root {
-            --brand-green: #1e7847; /* 嘉咊綠 */
-            --brand-bg: #fdfdf9;    /* 溫暖米白背景 */
+            --brand-green: #1e7847;
+            --brand-bg: #fdfdf9;
             --brand-text: #333;
         }
-        body { background-color: var(--brand-bg); padding-bottom: 120px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--brand-text); }
+        body { background-color: var(--brand-bg); padding-bottom: 120px; font-family: sans-serif; color: var(--brand-text); }
         
-        /* 頁首 Header */
-        .header { background-color: white; border-bottom: 3px solid var(--brand-green); padding: 15px 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .logo-container { display: flex; align-items: center; justify-content: center; gap: 15px; }
-        .logo-img { max-height: 70px; width: auto; object-fit: contain; } 
-        .header-text h1 { margin: 0; font-size: 1.3rem; font-weight: bold; color: var(--brand-green); letter-spacing: 1px; }
-        .header-text p { margin: 0; font-size: 0.8rem; color: #666; letter-spacing: 0.5px; }
+        /* Header 區域 */
+        .header { background-color: white; border-bottom: 3px solid var(--brand-green); padding: 15px 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header-top { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .logo-img { max-height: 60px; width: auto; object-fit: contain; } 
+        .header-text h1 { margin: 0; font-size: 1.2rem; font-weight: bold; color: var(--brand-green); }
+        .header-text p { margin: 0; font-size: 0.8rem; color: #666; }
+        
+        /* 語言選單 */
+        .lang-select { max-width: 200px; margin: 0 auto; border-color: var(--brand-green); color: var(--brand-green); font-weight: bold; }
 
         /* 商品卡片 */
-        .product-card { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.04); margin-bottom: 15px; background: white; border-radius: 12px; overflow: hidden; display: flex; flex-direction: row; transition: transform 0.2s; }
-        .product-card:active { transform: scale(0.98); }
+        .product-card { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.04); margin-bottom: 15px; background: white; border-radius: 12px; overflow: hidden; display: flex; flex-direction: row; }
         
-        /* 圖片設定 */
         .product-img-box { width: 110px; height: 110px; flex-shrink: 0; position: relative; background: #eee; cursor: zoom-in; }
         .product-img { width: 100%; height: 100%; object-fit: cover; }
         .zoom-hint { position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.5); color: white; font-size: 0.7rem; padding: 2px 6px; border-top-left-radius: 6px; pointer-events: none; }
 
-        /* 商品資訊 */
-        .product-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-name { font-weight: bold; font-size: 1rem; margin-bottom: 4px; color: #222; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-info { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-name { font-weight: bold; font-size: 1rem; margin-bottom: 2px; color: #222; line-height: 1.2; }
+        .product-subname { font-size: 0.8rem; color: #888; margin-bottom: 5px; }
         .product-price { color: #e63946; font-weight: bold; font-size: 1.2rem; }
         
-        /* 加減按鈕 */
+        /* 數量控制 */
         .qty-control { display: flex; align-items: center; background: #f1f3f5; border-radius: 20px; padding: 2px; }
-        .qty-btn { width: 30px; height: 30px; border: none; background: white; border-radius: 50%; color: var(--brand-green); font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; }
-        .qty-btn:active { background: var(--brand-green); color: white; }
-        .qty-val { width: 30px; text-align: center; font-weight: bold; font-size: 1rem; color: #333; }
+        .qty-btn { width: 28px; height: 28px; border: none; background: white; border-radius: 50%; color: var(--brand-green); font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .qty-val { width: 25px; text-align: center; font-weight: bold; font-size: 0.9rem; }
 
         /* 底部結帳區 */
         .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); z-index: 1000; border-top-left-radius: 16px; border-top-right-radius: 16px; }
+        .form-control { background-color: #f8f9fa; border: 1px solid #e9ecef; margin-bottom: 8px; font-size: 0.9rem; }
+        .btn-checkout { background-color: var(--brand-green); border: none; padding: 10px; font-size: 1rem; width: 100%; border-radius: 8px; }
         
-        /* 表單樣式 */
-        .form-control { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 10px; margin-bottom: 10px; }
-        .form-control:focus { background-color: white; border-color: var(--brand-green); box-shadow: none; }
-
-        .btn-checkout { background-color: var(--brand-green); border: none; padding: 12px; font-size: 1.1rem; width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(30, 120, 71, 0.3); }
-        .btn-checkout:hover { background-color: #16663b; }
-        .btn-checkout:disabled { background-color: #ccc; box-shadow: none; cursor: not-allowed; }
-
-        /* 讀取動畫 */
-        .loading { text-align: center; padding: 60px 20px; color: #888; }
-        .spinner-border { width: 3rem; height: 3rem; border-width: 0.25em; }
-
-        /* 圖片燈箱 (Lightbox) */
-        .lightbox-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease; }
+        /* 燈箱 */
+        .lightbox-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); opacity: 0; transition: opacity 0.3s; }
         .lightbox-modal.show { opacity: 1; }
-        .lightbox-content-wrapper { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; }
-        .lightbox-img { max-width: 90%; max-height: 80vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s ease; }
+        .lightbox-content-wrapper { display: flex; align-items: center; justify-content: center; height: 100%; }
+        .lightbox-img { max-width: 95%; max-height: 80vh; border-radius: 5px; transform: scale(0.9); transition: transform 0.3s; }
         .lightbox-modal.show .lightbox-img { transform: scale(1); }
-        .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 35px; cursor: pointer; z-index: 2001; background: rgba(0,0,0,0.3); width: 50px; height: 50px; text-align: center; line-height: 46px; border-radius: 50%; }
+        .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 40px; cursor: pointer; z-index: 2001; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="logo-container">
-        <img src="logo.jpg" alt="嘉咊百貨 Logo" class="logo-img" onerror="this.style.display='none'">
+    <div class="header-top">
+        <img src="logo.jpg" alt="Logo" class="logo-img" onerror="this.style.display='none'">
         <div class="header-text">
             <h1>嘉咊百貨生活館</h1>
             <p>Join Home Supermarket</p>
         </div>
     </div>
+    <select id="lang-switch" class="form-select lang-select" onchange="switchLang(this.value)">
+        <option value="zh">🇹🇼 中文</option>
+        <option value="en">🇺🇸 English</option>
+        <option value="id">🇮🇩 Indonesia</option>
+        <option value="vi">🇻🇳 Tiếng Việt</option>
+    </select>
 </div>
 
 <div class="container mt-4">
-    <div id="loading" class="loading">
-        <div class="spinner-border text-success mb-3" role="status"></div>
-        <p>正在整理貨架，請稍候...</p>
-    </div>
-    
+    <div id="loading" class="text-center py-5 text-muted">Loading products...</div>
     <div id="product-list"></div>
 </div>
 
@@ -96,54 +88,44 @@
 <div class="cart-bar">
     <div id="checkout-form" style="display:none;">
         <div class="row g-2">
-            <div class="col-4">
-                <input type="text" class="form-control" id="cust-name" placeholder="您的姓名*">
-            </div>
-            <div class="col-4">
-                <input type="tel" class="form-control" id="cust-phone" placeholder="電話號碼*">
-            </div>
-            <div class="col-4">
-                <input type="text" class="form-control" id="cust-line" placeholder="LINE ID">
-            </div>
+            <div class="col-4"><input type="text" class="form-control" id="cust-name" placeholder="Name"></div>
+            <div class="col-4"><input type="tel" class="form-control" id="cust-phone" placeholder="Phone"></div>
+            <div class="col-4"><input type="text" class="form-control" id="cust-line" placeholder="LINE ID"></div>
         </div>
     </div>
-    
     <div class="d-flex justify-content-between align-items-center mt-2">
         <div>
-            <div class="text-muted" style="font-size:0.9rem">購物車 <span class="badge bg-secondary rounded-pill" id="cart-count">0</span> 項</div>
+            <div class="text-muted small">Cart: <span class="badge bg-secondary rounded-pill" id="cart-count">0</span></div>
             <div class="fw-bold fs-4 text-success">$<span id="total-price">0</span></div>
         </div>
         <div style="width: 50%;">
-            <button onclick="submitOrder()" class="btn btn-success fw-bold btn-checkout" id="btn-submit">
-                確認下單
-            </button>
+            <button onclick="submitOrder()" class="btn btn-success fw-bold btn-checkout" id="btn-submit">Checkout</button>
         </div>
     </div>
 </div>
 
 <script>
     // =========================================================
-    // 設定區 (已填入您的網址)
-    // =========================================================
-    
-    // 商品資料來源
+    // 您的網址 (已幫您設定好)
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRUuy3yndWvFJqQGIZ0oXiWDLjbYzOzZGK6DN1WPz6yExBiAGLZifNvJxvrxyfvjpN7H22qmwqujOkM/pub?gid=0&single=true&output=csv'; 
-
-    // 訂單接收後台
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbySfQr-1oxCQPVaCRQMKoJSlPhigsUryAMWDnISiWQhC38XoDkfUZwg129FTGY1Na5LSQ/exec';
-    
     // =========================================================
 
     let products = [];
     let cart = {};
+    let currentLang = 'zh';
 
-    // 網頁載入後執行
+    // 介面翻譯設定
+    const uiText = {
+        zh: { name: "姓名", phone: "電話", line: "LINE ID", btn: "確認下單", empty: "購物車是空的" },
+        en: { name: "Your Name", phone: "Phone", line: "LINE ID", btn: "Place Order", empty: "Cart is empty" },
+        id: { name: "Nama", phone: "Nomor HP", line: "ID LINE", btn: "Pesan Sekarang", empty: "Keranjang kosong" },
+        vi: { name: "Tên", phone: "Số điện thoại", line: "ID LINE", btn: "Đặt hàng", empty: "Giỏ hàng trống" }
+    };
+
     window.onload = function() {
         fetch(csvUrl)
-            .then(res => {
-                if (!res.ok) throw new Error("無法連結資料庫");
-                return res.text();
-            })
+            .then(res => res.text())
             .then(text => {
                 products = parseCSV(text);
                 renderProducts();
@@ -151,67 +133,73 @@
                 document.getElementById('checkout-form').style.display = 'block';
             })
             .catch(err => {
-                document.getElementById('loading').innerHTML = `
-                    <div class="text-danger fw-bold">❌ 讀取失敗</div>
-                    <small>請確認 Google 試算表是否已發布為 CSV 格式。</small>
-                `;
-                console.error(err);
+                document.getElementById('loading').innerHTML = '❌ Error loading data.<br>Please check Google Sheet columns.';
             });
     };
 
-    // 解析 CSV
+    // 解析包含多國語言的 CSV
     function parseCSV(text) {
         const lines = text.trim().split('\n');
         const result = [];
-        // 跳過標題列，從第2行開始
+        // 假設欄位順序: name_zh, name_en, name_id, name_vi, price, img
         for(let i=1; i<lines.length; i++) {
-            // 使用正則表達式處理 CSV (避免逗號出錯)
-            const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-            if(row && row.length >= 2) {
-                const clean = (str) => str ? str.replace(/^"|"$/g, '').trim() : ''; 
-                
-                const name = clean(row[0]);
-                const price = parseInt(clean(row[1])) || 0;
-                const img = row[2] ? clean(row[2]) : '';
-
-                if(name) { // 只要有名稱就顯示
-                     result.push({ id: i, name, price, img });
-                }
+            const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g); // 正則處理 CSV
+            if(row && row.length >= 5) {
+                const clean = (str) => str ? str.replace(/^"|"$/g, '').trim() : '';
+                result.push({
+                    id: i,
+                    zh: clean(row[0]),
+                    en: clean(row[1]),
+                    id_lang: clean(row[2]), // id 是保留字，改用 id_lang
+                    vi: clean(row[3]),
+                    price: parseInt(clean(row[4])) || 0,
+                    img: clean(row[5])
+                });
             }
         }
         return result;
     }
 
-    // 畫面渲染
+    function switchLang(lang) {
+        currentLang = lang;
+        const t = uiText[lang];
+        document.getElementById('cust-name').placeholder = t.name;
+        document.getElementById('cust-phone').placeholder = t.phone;
+        document.getElementById('cust-line').placeholder = t.line;
+        document.getElementById('btn-submit').innerText = t.btn;
+        renderProducts();
+    }
+
     function renderProducts() {
         const list = document.getElementById('product-list');
         let html = '';
-        
-        if(products.length === 0) {
-            list.innerHTML = '<div class="text-center text-muted py-5">目前沒有商品上架</div>';
-            return;
-        }
-
         products.forEach(p => {
-            // 圖片處理：若無圖片則使用預設圖
-            let imgSrc = (p.img && p.img.startsWith('http')) ? p.img : 'https://placehold.co/150x150/e9ecef/1e7847?text=嘉咊';
-            let qty = cart[p.name] ? cart[p.name].qty : 0;
+            if(!p.zh) return;
+            // 決定顯示哪種語言
+            let mainName = p[currentLang === 'id' ? 'id_lang' : currentLang] || p.zh;
+            // 顯示中文副標題 (讓外籍人士也能對照，或老闆看畫面方便)
+            let subName = (currentLang !== 'zh') ? p.zh : '';
+            
+            let imgSrc = (p.img && p.img.startsWith('http')) ? p.img : 'https://placehold.co/150x150/eee/999?text=嘉咊';
+            let qty = cart[p.zh] ? cart[p.zh].qty : 0;
 
             html += `
             <div class="product-card">
                 <div class="product-img-box" onclick="openLightbox('${imgSrc}')">
-                    <img src="${imgSrc}" class="product-img" alt="${p.name}">
+                    <img src="${imgSrc}" class="product-img">
                     <div class="zoom-hint">🔍</div>
                 </div>
                 <div class="product-info">
-                    <div class="product-name">${p.name}</div>
+                    <div>
+                        <div class="product-name">${mainName}</div>
+                        ${subName ? `<div class="product-subname">${subName}</div>` : ''}
+                    </div>
                     <div class="d-flex justify-content-between align-items-end mt-2">
                         <span class="product-price">$${p.price}</span>
-                        
                         <div class="qty-control">
-                            <button onclick="updateQty('${p.name}', ${p.price}, -1)" class="qty-btn" ${qty===0?'disabled':''}>-</button>
+                            <button onclick="updateQty('${p.zh}', ${p.price}, -1)" class="qty-btn">-</button>
                             <div class="qty-val">${qty}</div>
-                            <button onclick="updateQty('${p.name}', ${p.price}, 1)" class="qty-btn">+</button>
+                            <button onclick="updateQty('${p.zh}', ${p.price}, 1)" class="qty-btn">+</button>
                         </div>
                     </div>
                 </div>
@@ -220,13 +208,13 @@
         list.innerHTML = html;
     }
 
-    // 購物車邏輯
-    function updateQty(name, price, change) {
-        if (change === 1 && !cart[name]) {
-            cart[name] = { price: price, qty: 1 };
-        } else if (cart[name]) {
-            cart[name].qty += change;
-            if (cart[name].qty <= 0) delete cart[name];
+    // 使用「中文名稱」當作購物車的 Key，這樣後台訂單才會是中文
+    function updateQty(nameZh, price, change) {
+        if (change === 1 && !cart[nameZh]) {
+            cart[nameZh] = { price: price, qty: 1 };
+        } else if (cart[nameZh]) {
+            cart[nameZh].qty += change;
+            if (cart[nameZh].qty <= 0) delete cart[nameZh];
         }
         renderProducts();
         updateCartTotal();
@@ -242,15 +230,13 @@
         document.getElementById('cart-count').innerText = count;
     }
 
-    // --- 燈箱功能 ---
+    // --- 燈箱 ---
     function openLightbox(src) {
         const modal = document.getElementById('imgLightbox');
-        const img = document.getElementById('lightboxImg');
-        img.src = src;
+        document.getElementById('lightboxImg').src = src;
         modal.style.display = 'block';
         setTimeout(() => modal.classList.add('show'), 10);
     }
-    
     function closeLightbox() {
         const modal = document.getElementById('imgLightbox');
         modal.classList.remove('show');
@@ -263,24 +249,20 @@
         const phone = document.getElementById('cust-phone').value.trim();
         const line = document.getElementById('cust-line').value.trim();
         const total = document.getElementById('total-price').innerText;
-        
-        // 檢查
-        if(Object.keys(cart).length === 0) return alert('購物車是空的喔！');
-        if(!name || !phone) return alert('請填寫姓名和電話，方便我們聯絡您。');
+        const t = uiText[currentLang];
 
-        // 鎖定按鈕
+        if(Object.keys(cart).length === 0) return alert(t.empty);
+        if(!name || !phone) return alert(currentLang==='zh' ? '請填寫姓名和電話' : 'Please fill in Name and Phone');
+
         const btn = document.getElementById('btn-submit');
-        const originalText = btn.innerText;
         btn.disabled = true;
-        btn.innerText = '處理中...';
+        btn.innerText = '...';
 
-        // 整理訂單明細
         let details = '';
         for(let k in cart) {
-            details += `${k} x${cart[k].qty} ($${cart[k].price*cart[k].qty}), `;
+            details += `${k} x${cart[k].qty}, `;
         }
 
-        // 打包資料
         const formData = new FormData();
         formData.append('姓名', name);
         formData.append('電話', phone);
@@ -288,29 +270,24 @@
         formData.append('訂單內容', details);
         formData.append('總金額', total);
 
-        // 發送到 GAS
         fetch(scriptUrl, { method: 'POST', body: formData })
             .then(res => res.json())
             .then(data => {
                 if(data.result === 'success') {
-                    alert('✅ 訂單已送出！我們會盡快處理。');
-                    // 重置
+                    alert('OK! Order Sent. 訂單已送出');
                     cart = {};
                     document.getElementById('cust-name').value = '';
                     document.getElementById('cust-phone').value = '';
-                    document.getElementById('cust-line').value = '';
                     renderProducts();
                     updateCartTotal();
                 } else {
-                    alert('❌ 發生錯誤：' + data.error);
+                    alert('Error: ' + data.error);
                 }
             })
-            .catch(err => {
-                alert('❌ 連線錯誤，請稍後再試。');
-            })
+            .catch(err => alert('Network Error'))
             .finally(() => {
                 btn.disabled = false;
-                btn.innerText = originalText;
+                btn.innerText = t.btn;
             });
     }
 </script>
