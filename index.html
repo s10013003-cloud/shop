@@ -3,83 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>嘉咊百貨 - Join Home Supermarket</title>
+    <title>嘉咊百貨生活館 - Join Home Supermarket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; padding-bottom: 100px; font-family: sans-serif; }
-        .header { background-color: #00C300; color: white; padding: 15px; text-align: center; }
-        .lang-select { margin: 10px auto; max-width: 200px; }
-        .product-card { border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; background: white; border-radius: 8px; overflow: hidden; display: flex; flex-direction: row; }
-        .product-img { width: 110px; height: 110px; object-fit: cover; background-color: #eee; flex-shrink: 0; }
-        .product-info { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .price { color: #dc3545; font-weight: bold; font-size: 1.1rem; }
-        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; }
-        .loading { text-align: center; padding: 50px; color: #666; }
-        /* 數量調整按鈕 */
-        .qty-btn { width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 1px solid #ccc; background: white; color: #333; }
+        /* --- 品牌視覺設定 --- */
+        :root {
+            --brand-green: #1e7847; /* 嘉咊綠 */
+            --brand-bg: #fdfdf9;    /* 溫暖米白背景 */
+            --brand-text: #333;
+        }
+        body { background-color: var(--brand-bg); padding-bottom: 120px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--brand-text); }
+        
+        /* 頁首 Header */
+        .header { background-color: white; border-bottom: 3px solid var(--brand-green); padding: 15px 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo-container { display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .logo-img { max-height: 70px; width: auto; object-fit: contain; } 
+        .header-text h1 { margin: 0; font-size: 1.3rem; font-weight: bold; color: var(--brand-green); letter-spacing: 1px; }
+        .header-text p { margin: 0; font-size: 0.8rem; color: #666; letter-spacing: 0.5px; }
+
+        /* 商品卡片 */
+        .product-card { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.04); margin-bottom: 15px; background: white; border-radius: 12px; overflow: hidden; display: flex; flex-direction: row; transition: transform 0.2s; }
+        .product-card:active { transform: scale(0.98); }
+        
+        /* 圖片設定 */
+        .product-img-box { width: 110px; height: 110px; flex-shrink: 0; position: relative; background: #eee; cursor: zoom-in; }
+        .product-img { width: 100%; height: 100%; object-fit: cover; }
+        .zoom-hint { position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.5); color: white; font-size: 0.7rem; padding: 2px 6px; border-top-left-radius: 6px; pointer-events: none; }
+
+        /* 商品資訊 */
+        .product-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-name { font-weight: bold; font-size: 1rem; margin-bottom: 4px; color: #222; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-price { color: #e63946; font-weight: bold; font-size: 1.2rem; }
+        
+        /* 加減按鈕 */
+        .qty-control { display: flex; align-items: center; background: #f1f3f5; border-radius: 20px; padding: 2px; }
+        .qty-btn { width: 30px; height: 30px; border: none; background: white; border-radius: 50%; color: var(--brand-green); font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; }
+        .qty-btn:active { background: var(--brand-green); color: white; }
+        .qty-val { width: 30px; text-align: center; font-weight: bold; font-size: 1rem; color: #333; }
+
+        /* 底部結帳區 */
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); z-index: 1000; border-top-left-radius: 16px; border-top-right-radius: 16px; }
+        
+        /* 表單樣式 */
+        .form-control { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 10px; margin-bottom: 10px; }
+        .form-control:focus { background-color: white; border-color: var(--brand-green); box-shadow: none; }
+
+        .btn-checkout { background-color: var(--brand-green); border: none; padding: 12px; font-size: 1.1rem; width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(30, 120, 71, 0.3); }
+        .btn-checkout:hover { background-color: #16663b; }
+        .btn-checkout:disabled { background-color: #ccc; box-shadow: none; cursor: not-allowed; }
+
+        /* 讀取動畫 */
+        .loading { text-align: center; padding: 60px 20px; color: #888; }
+        .spinner-border { width: 3rem; height: 3rem; border-width: 0.25em; }
+
+        /* 圖片燈箱 (Lightbox) */
+        .lightbox-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease; }
+        .lightbox-modal.show { opacity: 1; }
+        .lightbox-content-wrapper { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; }
+        .lightbox-img { max-width: 90%; max-height: 80vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s ease; }
+        .lightbox-modal.show .lightbox-img { transform: scale(1); }
+        .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 35px; cursor: pointer; z-index: 2001; background: rgba(0,0,0,0.3); width: 50px; height: 50px; text-align: center; line-height: 46px; border-radius: 50%; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h4 class="m-0">Join Home Supermarket</h4>
-    <select id="lang-switch" class="form-select lang-select" onchange="switchLang(this.value)">
-        <option value="zh">🇹🇼 中文</option>
-        <option value="en">🇺🇸 English</option>
-        <option value="id">🇮🇩 Indonesia</option>
-        <option value="vi">🇻🇳 Tiếng Việt</option>
-    </select>
+    <div class="logo-container">
+        <img src="logo.jpg" alt="嘉咊百貨 Logo" class="logo-img" onerror="this.style.display='none'">
+        <div class="header-text">
+            <h1>嘉咊百貨生活館</h1>
+            <p>Join Home Supermarket</p>
+        </div>
+    </div>
 </div>
 
-<div class="container mt-3">
+<div class="container mt-4">
     <div id="loading" class="loading">
-        Loading products...<br>
-        <small style="font-size:0.7rem">(Please wait a moment)</small>
+        <div class="spinner-border text-success mb-3" role="status"></div>
+        <p>正在整理貨架，請稍候...</p>
     </div>
+    
     <div id="product-list"></div>
 </div>
 
+<div id="imgLightbox" class="lightbox-modal" onclick="closeLightbox()">
+    <div class="lightbox-close">&times;</div>
+    <div class="lightbox-content-wrapper">
+        <img class="lightbox-img" id="lightboxImg">
+    </div>
+</div>
+
 <div class="cart-bar">
-    <div class="mb-2" id="checkout-form" style="display:none;">
+    <div id="checkout-form" style="display:none;">
         <div class="row g-2">
-            <div class="col-6">
-                <input type="text" class="form-control form-control-sm" id="cust-name" placeholder="Name">
+            <div class="col-4">
+                <input type="text" class="form-control" id="cust-name" placeholder="您的姓名*">
             </div>
-            <div class="col-6">
-                <input type="text" class="form-control form-control-sm" id="cust-line" placeholder="LINE ID">
+            <div class="col-4">
+                <input type="tel" class="form-control" id="cust-phone" placeholder="電話號碼*">
+            </div>
+            <div class="col-4">
+                <input type="text" class="form-control" id="cust-line" placeholder="LINE ID">
             </div>
         </div>
     </div>
+    
     <div class="d-flex justify-content-between align-items-center mt-2">
         <div>
-            <span class="badge bg-danger rounded-pill" id="cart-count">0</span> 
-            Total: <span class="text-success fw-bold">$<span id="total-price">0</span></span>
+            <div class="text-muted" style="font-size:0.9rem">購物車 <span class="badge bg-secondary rounded-pill" id="cart-count">0</span> 項</div>
+            <div class="fw-bold fs-4 text-success">$<span id="total-price">0</span></div>
         </div>
-        <button onclick="checkout()" class="btn btn-success fw-bold btn-sm px-4" id="btn-checkout">LINE Checkout</button>
+        <div style="width: 50%;">
+            <button onclick="submitOrder()" class="btn btn-success fw-bold btn-checkout" id="btn-submit">
+                確認下單
+            </button>
+        </div>
     </div>
 </div>
 
 <script>
-    // ==========================================
-    // 您的 Google 試算表 CSV 連結 (已設定好)
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/1iof8pqZUxkbVUN-g3lNUcHPRxZCyVxfUCcojvbv3URQ/pub?output=csv'; 
-    // ==========================================
+    // =========================================================
+    // 設定區 (已填入您的網址)
+    // =========================================================
+    
+    // 商品資料來源
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRUuy3yndWvFJqQGIZ0oXiWDLjbYzOzZGK6DN1WPz6yExBiAGLZifNvJxvrxyfvjpN7H22qmwqujOkM/pub?gid=0&single=true&output=csv'; 
+
+    // 訂單接收後台
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbySfQr-1oxCQPVaCRQMKoJSlPhigsUryAMWDnISiWQhC38XoDkfUZwg129FTGY1Na5LSQ/exec';
+    
+    // =========================================================
 
     let products = [];
     let cart = {};
-    let currentLang = 'zh';
 
-    // 介面翻譯
-    const uiText = {
-        zh: { namePlace: "姓名", linePlace: "LINE ID", btn: "用 LINE 結帳" },
-        en: { namePlace: "Your Name", linePlace: "LINE ID", btn: "Checkout" },
-        id: { namePlace: "Nama Anda", linePlace: "ID LINE", btn: "Beli" },
-        vi: { namePlace: "Tên của bạn", linePlace: "ID LINE", btn: "Thanh toán" }
-    };
-
+    // 網頁載入後執行
     window.onload = function() {
         fetch(csvUrl)
-            .then(res => res.text())
+            .then(res => {
+                if (!res.ok) throw new Error("無法連結資料庫");
+                return res.text();
+            })
             .then(text => {
                 products = parseCSV(text);
                 renderProducts();
@@ -87,71 +151,67 @@
                 document.getElementById('checkout-form').style.display = 'block';
             })
             .catch(err => {
-                document.getElementById('loading').innerHTML = '❌ Error loading data.<br>Please check Google Sheet "Publish to Web" settings.';
+                document.getElementById('loading').innerHTML = `
+                    <div class="text-danger fw-bold">❌ 讀取失敗</div>
+                    <small>請確認 Google 試算表是否已發布為 CSV 格式。</small>
+                `;
+                console.error(err);
             });
     };
 
+    // 解析 CSV
     function parseCSV(text) {
         const lines = text.trim().split('\n');
         const result = [];
-        // 從第2行開始讀取 (忽略標題)
+        // 跳過標題列，從第2行開始
         for(let i=1; i<lines.length; i++) {
-            // 處理 CSV 的逗號分隔 (簡易版)
-            const row = lines[i].split(',');
-            if(row.length >= 5) {
-                // 移除可能的引號與空白
-                const clean = (str) => str ? str.replace(/["\r]/g, '').trim() : '';
+            // 使用正則表達式處理 CSV (避免逗號出錯)
+            const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+            if(row && row.length >= 2) {
+                const clean = (str) => str ? str.replace(/^"|"$/g, '').trim() : ''; 
                 
-                result.push({
-                    id: i,
-                    zh: clean(row[0]), 
-                    en: clean(row[1]), 
-                    id_lang: clean(row[2]), 
-                    vi: clean(row[3]),
-                    price: parseInt(clean(row[4])) || 0,
-                    img: clean(row[5])
-                });
+                const name = clean(row[0]);
+                const price = parseInt(clean(row[1])) || 0;
+                const img = row[2] ? clean(row[2]) : '';
+
+                if(name) { // 只要有名稱就顯示
+                     result.push({ id: i, name, price, img });
+                }
             }
         }
         return result;
     }
 
-    function switchLang(lang) {
-        currentLang = lang;
-        document.getElementById('cust-name').placeholder = uiText[lang].namePlace;
-        document.getElementById('cust-line').placeholder = uiText[lang].linePlace;
-        document.getElementById('btn-checkout').innerText = uiText[lang].btn;
-        renderProducts();
-    }
-
+    // 畫面渲染
     function renderProducts() {
         const list = document.getElementById('product-list');
         let html = '';
+        
+        if(products.length === 0) {
+            list.innerHTML = '<div class="text-center text-muted py-5">目前沒有商品上架</div>';
+            return;
+        }
+
         products.forEach(p => {
-            if(!p.zh) return; // 跳過空行
-            
-            // 根據語言顯示對應名稱，若無翻譯則顯示中文
-            let displayName = p[currentLang === 'id' ? 'id_lang' : currentLang] || p.zh;
-            let imgSrc = (p.img && p.img.startsWith('http')) ? p.img : 'https://placehold.co/150/eee/999?text=No+Img';
-            
-            // 檢查購物車內數量
-            let qty = cart[p.zh] ? cart[p.zh].qty : 0;
+            // 圖片處理：若無圖片則使用預設圖
+            let imgSrc = (p.img && p.img.startsWith('http')) ? p.img : 'https://placehold.co/150x150/e9ecef/1e7847?text=嘉咊';
+            let qty = cart[p.name] ? cart[p.name].qty : 0;
 
             html += `
             <div class="product-card">
-                <img src="${imgSrc}" class="product-img">
+                <div class="product-img-box" onclick="openLightbox('${imgSrc}')">
+                    <img src="${imgSrc}" class="product-img" alt="${p.name}">
+                    <div class="zoom-hint">🔍</div>
+                </div>
                 <div class="product-info">
-                    <div>
-                        <div class="fw-bold text-dark" style="font-size:1rem;">${displayName}</div>
-                        ${currentLang !== 'zh' ? `<small class="text-muted">${p.zh}</small>` : ''}
-                    </div>
+                    <div class="product-name">${p.name}</div>
                     <div class="d-flex justify-content-between align-items-end mt-2">
-                        <span class="price">$${p.price}</span>
+                        <span class="product-price">$${p.price}</span>
                         
-                        <div class="d-flex align-items-center">
-                            ${qty > 0 ? `<button onclick="updateQty('${p.zh}', -1)" class="qty-btn">-</button>` : ''}
-                            <span class="mx-2 fw-bold ${qty > 0 ? 'text-success' : 'text-muted'}">${qty > 0 ? qty : ''}</span>
-                            <button onclick="updateQty('${p.zh}', ${p.price}, 1)" class="btn btn-sm btn-outline-success rounded-pill" style="min-width:30px;">+</button>
+                        <div class="qty-control">
+                            <button onclick="updateQty('${p.name}', ${p.price}, -1)" class="qty-btn" ${qty===0?'disabled':''}>-</button>
+                            <div class="qty-val">${qty}</div>
+                            <button onclick="updateQty('${p.name}', ${p.price}, 1)" class="qty-btn">+</button>
                         </div>
                     </div>
                 </div>
@@ -160,17 +220,14 @@
         list.innerHTML = html;
     }
 
-    function updateQty(nameZh, price, change) {
-        // 如果是按加號，且商品還沒在車裡，先傳入價格
-        // 如果是按減號，只傳 nameZh 和 change 就夠了
-        if(change === 1 && !cart[nameZh]) {
-            cart[nameZh] = { price: price, qty: 1 };
-        } else if (cart[nameZh]) {
-            cart[nameZh].qty += change;
-            if(cart[nameZh].qty <= 0) delete cart[nameZh];
+    // 購物車邏輯
+    function updateQty(name, price, change) {
+        if (change === 1 && !cart[name]) {
+            cart[name] = { price: price, qty: 1 };
+        } else if (cart[name]) {
+            cart[name].qty += change;
+            if (cart[name].qty <= 0) delete cart[name];
         }
-        
-        // 重新渲染畫面 (為了更新 + - 按鈕狀態)
         renderProducts();
         updateCartTotal();
     }
@@ -185,20 +242,76 @@
         document.getElementById('cart-count').innerText = count;
     }
 
-    function checkout() {
-        const name = document.getElementById('cust-name').value;
-        const line = document.getElementById('cust-line').value;
-        
-        if(Object.keys(cart).length === 0) return alert('Cart is empty!');
-        if(!name) return alert('Please enter your name.');
+    // --- 燈箱功能 ---
+    function openLightbox(src) {
+        const modal = document.getElementById('imgLightbox');
+        const img = document.getElementById('lightboxImg');
+        img.src = src;
+        modal.style.display = 'block';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+    
+    function closeLightbox() {
+        const modal = document.getElementById('imgLightbox');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
 
-        let msg = `【訂單 New Order】\nName: ${name}\nLINE: ${line}\n----------------\n`;
-        for(let k in cart) {
-            msg += `${k} x ${cart[k].qty} = $${cart[k].price * cart[k].qty}\n`;
-        }
-        msg += `----------------\nTotal: $${document.getElementById('total-price').innerText}`;
+    // --- 送出訂單 ---
+    function submitOrder() {
+        const name = document.getElementById('cust-name').value.trim();
+        const phone = document.getElementById('cust-phone').value.trim();
+        const line = document.getElementById('cust-line').value.trim();
+        const total = document.getElementById('total-price').innerText;
         
-        location.href = `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`;
+        // 檢查
+        if(Object.keys(cart).length === 0) return alert('購物車是空的喔！');
+        if(!name || !phone) return alert('請填寫姓名和電話，方便我們聯絡您。');
+
+        // 鎖定按鈕
+        const btn = document.getElementById('btn-submit');
+        const originalText = btn.innerText;
+        btn.disabled = true;
+        btn.innerText = '處理中...';
+
+        // 整理訂單明細
+        let details = '';
+        for(let k in cart) {
+            details += `${k} x${cart[k].qty} ($${cart[k].price*cart[k].qty}), `;
+        }
+
+        // 打包資料
+        const formData = new FormData();
+        formData.append('姓名', name);
+        formData.append('電話', phone);
+        formData.append('LINE_ID', line);
+        formData.append('訂單內容', details);
+        formData.append('總金額', total);
+
+        // 發送到 GAS
+        fetch(scriptUrl, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if(data.result === 'success') {
+                    alert('✅ 訂單已送出！我們會盡快處理。');
+                    // 重置
+                    cart = {};
+                    document.getElementById('cust-name').value = '';
+                    document.getElementById('cust-phone').value = '';
+                    document.getElementById('cust-line').value = '';
+                    renderProducts();
+                    updateCartTotal();
+                } else {
+                    alert('❌ 發生錯誤：' + data.error);
+                }
+            })
+            .catch(err => {
+                alert('❌ 連線錯誤，請稍後再試。');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            });
     }
 </script>
 
